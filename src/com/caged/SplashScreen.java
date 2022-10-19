@@ -12,6 +12,7 @@ public class SplashScreen {
     public static void main(String[] args) {
                 try {
                     File myObj = new File("resources/cagedsplash.txt");
+
                     Scanner myReader = new Scanner(myObj);
                     while (myReader.hasNextLine()) {
                         String data = myReader.nextLine();
