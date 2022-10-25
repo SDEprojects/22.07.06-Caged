@@ -23,19 +23,19 @@ class Player {
         setName(name);
     }
 
-    public Player(){
+    public Player() {
 
     }
 
     //functions
-    public void playerActions(String verb, String noun, String nounPrefix, LocationGetter location){ //add
+    public void playerActions(String verb, String noun, String nounPrefix, LocationGetter location) { //add
         switch (verb) {
             case "move":
                 move(noun, location);
                 break;
             case "take":
                 take(noun, nounPrefix, location);
-                System.out.println("Taking "+ noun +"!");
+                System.out.println("Taking " + noun + "!");
                 break;
             case "look":
                 look(noun, location);
@@ -59,7 +59,7 @@ class Player {
         String playerLocation = getCurrentLocation();
         JsonNode node = mapper.valueToTree(location);
         try {
-            if (node.get("room").get(playerLocation).get("NPCs").get(firstName + " " + lastName).has("chat")){
+            if (node.get("room").get(playerLocation).get("NPCs").get(firstName + " " + lastName).has("chat")) {
                 System.out.println(node.get("room").get(playerLocation).get("NPCs").get(firstName + " " + lastName).get("chat"));
             }
         } catch (Exception e) {
@@ -68,20 +68,19 @@ class Player {
     }
 
 
-    private void move(String direction, LocationGetter location){ //private
+    private void move(String direction, LocationGetter location) { //private
         String playerLocation = getCurrentLocation();
         JsonNode node = mapper.valueToTree(location);
-        if (node.get("room").get(playerLocation).get("Moves").has(direction)){
+        if (node.get("room").get(playerLocation).get("Moves").has(direction)) {
             System.out.println("Player moves " + direction);
             setCurrentLocation(node.get("room").get(playerLocation).get("Moves").get(direction).textValue());
-        }
-        else {
+        } else {
             System.out.println("Direction not available...");
             HitEnter.enter();
         }
     }
 
-    private void take(String item, String itemPrefix, LocationGetter location){ //private
+    private void take(String item, String itemPrefix, LocationGetter location) { //private
         String playerLocation = getCurrentLocation();
         for (Item i :
                 foundItems) {
@@ -92,13 +91,13 @@ class Player {
                 ) {
                     System.out.println("You have a " + mine.name);
                 }
-            }
-            else {System.out.println("You did not see the item");
+            } else {
+                System.out.println("You did not see the item");
             }
         }
     }
 
-    private void use(String subThing, String parentThing, LocationGetter location){
+    private void use(String subThing, String parentThing, LocationGetter location) {
         String playerLocation = getCurrentLocation();
         JsonNode node = mapper.valueToTree(location);
         if (node.get("room").get(playerLocation).get("Inventory").has(parentThing)) {
@@ -107,7 +106,7 @@ class Player {
                 if (node.get("room").get(playerLocation).get("Inventory").get(parentThing).has("items")) {
                     JsonNode nodeItem = node.get("room").get(playerLocation).get("Inventory").get(parentThing).get("items");
                     int itemFound = 0;
-                    for (Item i:
+                    for (Item i :
                             foundItems) {
                         if (i.name.equals(nodeItem.get("name").textValue())) {
                             itemFound = 1;
@@ -116,56 +115,55 @@ class Player {
                     if (itemFound == 0) {
                         Item foundItem = new Item(nodeItem.get("name").textValue(), nodeItem.get("description").textValue(), nodeItem.get("strength").intValue(), nodeItem.get("opens").textValue(), playerLocation, false);
                         foundItems.add(foundItem);
-                        System.out.println("You found "+ foundItem.name+ "!");
+                        System.out.println("You found " + foundItem.name + "!");
                     }
                 } else {
                     System.out.println("Tried to use " + parentThing + " " + subThing);
                     System.out.println("Thing not found");
                 }
 
-            }
-            else{
-                System.out.println(parentThing+ " does not have " + subThing);
+            } else {
+                System.out.println(parentThing + " does not have " + subThing);
             }
 
-        }
-        else {
+        } else {
             System.out.println(parentThing + "not here!");
         }
     }
 
 
-
-    private void look(String thing, LocationGetter location){ //private
+    private void look(String thing, LocationGetter location) { //private
         String playerLocation = getCurrentLocation();
         JsonNode node = mapper.valueToTree(location);
-        if (node.get("room").get(playerLocation).get("Inventory").has(thing)){
+        if (node.get("room").get(playerLocation).get("Inventory").has(thing)) {
             System.out.println(node.get("room").get(playerLocation).get("Inventory").get(thing).get("description").textValue());
-        }
-        else {
+        } else {
             System.out.println("Thing not found...");
         }
         HitEnter.enter();
     }
 
-    private void helpCommand(){ //private
+    private void helpCommand() { //private
 
-        Intro command = new Intro();
-        List<String> action = command.help();
+        YAMLReader yamlReader = new YAMLReader();
+        List<String> action = yamlReader.help();
         List<String> help = new ArrayList<>(action);
-        String values = String.join(", ", help);
-        System.out.println("The available commands are: " + values + ".");
+        //String values = String.join(", ", help);
+        System.out.println("The available commands are: ");
+        for (String h : help) {
+            System.out.println(h);
+
+        }
         Scanner scanner = new Scanner(System.in);
         HitEnter.enter();
     }
 
-    private void quitConfirm(){ //private
+    private void quitConfirm() { //private
         System.out.println("\u001b[30m\u001b[41mDo you really want to quit?\u001b[0m");
         String confirm = scanner.nextLine().toLowerCase();
-        if (confirm.equals("yes")){
+        if (confirm.equals("yes")) {
             System.exit(0);
-        }
-        else {
+        } else {
             System.out.println("Didn't say yes...Still caged...");
         }
     }
